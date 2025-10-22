@@ -1,16 +1,25 @@
 /**
  * AACSearch React Library
- * Main entry point
+ * Main entry point - Data & Logic Layer (No UI Components)
  */
 
-// Client
+// Clients
 export { AACSearchClient } from './client/AACSearchClient';
+export { AACSearchClientExtended } from './client/AACSearchClientExtended';
 export type { AACSearchConfig } from './types';
+export type {
+  ConversationalSearchParams,
+  ConversationalSearchResult,
+  VectorSearchParams,
+  RecommendationParams,
+  BatchOperationParams,
+  StreamingOptions,
+} from './client/AACSearchClientExtended';
 
 // Context & Provider
 export { SearchProvider, useSearchContext } from './components/SearchProvider';
 
-// Hooks
+// Basic Hooks
 export { useSearch } from './hooks/useSearch';
 export { useCollections } from './hooks/useCollections';
 export { useAnalytics } from './hooks/useAnalytics';
@@ -18,12 +27,12 @@ export { useApiKeys } from './hooks/useApiKeys';
 export { useInstantSearch } from './hooks/useInstantSearch';
 export { useClient } from './hooks/useClient';
 
-// Components
-export { SearchBox } from './components/SearchBox';
-export { SearchResults } from './components/SearchResults';
-export { InstantSearch } from './components/InstantSearch';
-export { Facets } from './components/Facets';
-export { Pagination } from './components/Pagination';
+// Advanced Hooks
+export { useConversationalSearch } from './hooks/useConversationalSearch';
+export { useRecommendations } from './hooks/useRecommendations';
+export { useVectorSearch } from './hooks/useVectorSearch';
+export { useRealtime } from './hooks/useRealtime';
+export { useAutoSuggest } from './hooks/useAutoSuggest';
 
 // Types
 export type {
@@ -90,15 +99,35 @@ export type {
   UseAnalyticsResult,
   UseApiKeysResult,
 
-  // Component Props Types
-  SearchBoxProps,
-  SearchResultsProps,
-  InstantSearchProps,
-  FiltersProps,
-  FacetsProps,
-  PaginationProps,
-  SearchProviderProps,
-
   // Context Types
   SearchContextValue,
+  SearchProviderProps,
 } from './types';
+
+// Advanced Hook Types
+export type {
+  UseConversationalSearchOptions,
+  UseConversationalSearchResult,
+} from './hooks/useConversationalSearch';
+
+export type {
+  UseRecommendationsOptions,
+  UseRecommendationsResult,
+} from './hooks/useRecommendations';
+
+export type {
+  UseVectorSearchOptions,
+  UseVectorSearchResult,
+} from './hooks/useVectorSearch';
+
+export type {
+  UseRealtimeOptions,
+  UseRealtimeResult,
+  RealtimeUpdate,
+} from './hooks/useRealtime';
+
+export type {
+  UseAutoSuggestOptions,
+  UseAutoSuggestResult,
+  Suggestion,
+} from './hooks/useAutoSuggest';

@@ -1,34 +1,29 @@
 # @aacsearch/react
 
-Official React library for **AACSearch** - A powerful, scalable search-as-a-service platform built on Typesense.
+Official React library for **AACSearch** - Powerful search-as-a-service platform with AI capabilities.
+
+> **Important:** This library provides **data fetching hooks and SDK client only** (no UI components). For pre-built UI components, use `@aacsearch/ui` or build your own with these hooks!
 
 ## Features
 
-- **TypeScript Support** - Fully typed for the best developer experience
-- **React Hooks** - Modern React hooks API for seamless integration
-- **Instant Search** - Real-time search with debouncing and auto-complete
-- **Faceted Navigation** - Advanced filtering with facets
-- **Analytics** - Track search behavior and performance
-- **Multi-tenant** - Built-in support for multi-tenant architectures
-- **Lightweight** - Tree-shakeable with no unnecessary dependencies
-- **Framework Agnostic SDK** - Use the core SDK without React
+### Core
+- ✅ **TypeScript SDK** - Fully typed client for all API operations
+- ✅ **React Hooks** - Modern hooks for data fetching
+- ✅ **Zero UI Dependencies** - Pure logic layer
+- ✅ **Tree-shakeable** - Import only what you need
+
+### Advanced
+- 🤖 **AI-Powered Search** - Conversational search with streaming
+- 🔍 **Vector Search** - Semantic similarity search
+- 🎯 **Recommendations** - Personalized suggestions
+- ⚡ **Real-time** - WebSocket live updates
+- 💡 **Auto-suggest** - Intelligent autocomplete
+- 📊 **Analytics** - Performance tracking & A/B testing
 
 ## Installation
 
 ```bash
 npm install @aacsearch/react
-```
-
-or with yarn:
-
-```bash
-yarn add @aacsearch/react
-```
-
-or with pnpm:
-
-```bash
-pnpm add @aacsearch/react
 ```
 
 ## Quick Start
@@ -44,7 +39,6 @@ function App() {
       config={{
         apiKey: 'your-api-key',
         endpoint: 'https://api.aacsearch.com',
-        tenant: 'your-tenant-id', // optional
       }}
     >
       <YourApp />
@@ -53,30 +47,21 @@ function App() {
 }
 ```
 
-### 2. Use the search hooks
+### 2. Use hooks in your components
 
 ```tsx
 import { useSearch } from '@aacsearch/react';
 
 function SearchComponent() {
-  const { results, loading, error, search } = useSearch({
+  const { results, loading, search } = useSearch({
     collection: 'products',
   });
 
-  const handleSearch = (query: string) => {
-    search({ q: query });
-  };
-
   return (
     <div>
-      <input
-        type="text"
-        onChange={(e) => handleSearch(e.target.value)}
-        placeholder="Search products..."
-      />
+      <input onChange={(e) => search({ q: e.target.value })} />
 
       {loading && <p>Loading...</p>}
-      {error && <p>Error: {error.message}</p>}
 
       {results?.hits.map((hit) => (
         <div key={hit.document.id}>
@@ -89,240 +74,145 @@ function SearchComponent() {
 }
 ```
 
-## API Reference
+## Available Hooks
 
-### SearchProvider
+### Basic Hooks
 
-The root component that provides the AACSearch client to all child components.
+- **`useSearch`** - Perform search queries
+- **`useInstantSearch`** - Advanced search with filters, facets, pagination
+- **`useCollections`** - Manage search collections
+- **`useAnalytics`** - Get analytics data
+- **`useApiKeys`** - Manage API keys
+- **`useClient`** - Direct access to SDK client
 
-```tsx
-<SearchProvider
-  config={{
-    apiKey: string;
-    endpoint?: string;
-    tenant?: string;
-    timeout?: number;
-  }}
->
-  {children}
-</SearchProvider>
-```
+### Advanced Hooks
 
-### Hooks
+- **`useConversationalSearch`** - AI-powered conversational search with streaming
+- **`useVectorSearch`** - Semantic/vector search
+- **`useRecommendations`** - Personalized recommendations
+- **`useRealtime`** - WebSocket real-time updates
+- **`useAutoSuggest`** - Autocomplete suggestions
 
-#### useSearch
+## Basic Usage Examples
 
-Hook for performing searches.
+### Search with Filters
 
 ```tsx
-const { results, loading, error, search, reset } = useSearch({
-  collection: 'products',
-  initialQuery?: 'laptop',
-  autoSearch?: true,
-  onSuccess?: (results) => console.log(results),
-  onError?: (error) => console.error(error),
-});
+import { useInstantSearch } from '@aacsearch/react';
 
-// Perform a search
-search({
-  q: 'laptop',
-  filter_by: 'price:<1000',
-  sort_by: 'price:asc',
-  per_page: 20,
-});
-```
-
-#### useInstantSearch
-
-Advanced hook for instant search with filters, facets, and pagination.
-
-```tsx
-const {
-  query,
-  setQuery,
-  results,
-  loading,
-  error,
-  page,
-  setPage,
-  filters,
-  addFilter,
-  removeFilter,
-  clearFilters,
-  sortBy,
-  setSortBy,
-  totalPages,
-} = useInstantSearch({
-  collection: 'products',
-  searchFields: ['name', 'description'],
-  facetFields: ['category', 'brand'],
-  resultsPerPage: 10,
-});
-```
-
-#### useCollections
-
-Hook for managing collections.
-
-```tsx
-const { collections, loading, error, createCollection, deleteCollection, refresh } =
-  useCollections({
-    autoFetch: true,
+function FilteredSearch() {
+  const {
+    query,
+    setQuery,
+    results,
+    filters,
+    addFilter,
+    removeFilter,
+    page,
+    setPage,
+  } = useInstantSearch({
+    collection: 'products',
+    searchFields: ['name', 'description'],
+    facetFields: ['category', 'brand'],
   });
 
-// Create a new collection
-await createCollection({
-  name: 'products',
-  fields: [
-    { name: 'name', type: 'string' },
-    { name: 'price', type: 'float' },
-    { name: 'category', type: 'string', facet: true },
-  ],
-});
-```
-
-#### useAnalytics
-
-Hook for fetching analytics data.
-
-```tsx
-const { analytics, loading, error, fetchAnalytics } = useAnalytics({
-  initialParams: {
-    start_date: '2024-01-01',
-    end_date: '2024-12-31',
-  },
-  autoFetch: true,
-  refreshInterval: 60000, // Refresh every minute
-});
-```
-
-#### useApiKeys
-
-Hook for managing API keys.
-
-```tsx
-const { apiKeys, loading, error, createApiKey, deleteApiKey, refresh } = useApiKeys({
-  autoFetch: true,
-});
-
-// Create a new API key
-await createApiKey({
-  name: 'Frontend Key',
-  permissions: ['read_only'],
-  collections: ['products', 'articles'],
-  expires_at: '2025-12-31',
-});
-```
-
-### React Components
-
-#### SearchBox
-
-Pre-built search input component.
-
-```tsx
-import { SearchBox } from '@aacsearch/react';
-
-<SearchBox
-  collection="products"
-  placeholder="Search products..."
-  onSearch={(query, results) => console.log(query, results)}
-  debounceMs={300}
-  minChars={2}
-  showSearchButton={false}
-/>
-```
-
-#### SearchResults
-
-Pre-built results display component.
-
-```tsx
-import { SearchResults } from '@aacsearch/react';
-
-<SearchResults
-  results={results}
-  loading={loading}
-  renderHit={(hit) => (
+  return (
     <div>
-      <h3>{hit.document.name}</h3>
-      <p>{hit.document.description}</p>
+      {/* Your UI here */}
+      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      {/* Render results, filters, pagination */}
     </div>
-  )}
-  onHitClick={(hit) => console.log('Clicked:', hit)}
-/>
+  );
+}
 ```
 
-#### InstantSearch
-
-Complete instant search UI.
+### Get Recommendations
 
 ```tsx
-import { InstantSearch } from '@aacsearch/react';
+import { useRecommendations } from '@aacsearch/react';
 
-<InstantSearch
-  collection="products"
-  searchFields={['name', 'description']}
-  displayFields={{
-    title: 'name',
-    description: 'description',
-    image: 'image_url',
-  }}
-  filters={[
-    { field: 'category', label: 'Category', type: 'checkbox' },
-    { field: 'brand', label: 'Brand', type: 'checkbox' },
-  ]}
-  sorting={[
-    { field: 'price', label: 'Price: Low to High', order: 'asc' },
-    { field: 'price', label: 'Price: High to Low', order: 'desc' },
-  ]}
-  resultsPerPage={20}
-  onHitClick={(hit) => router.push(`/products/${hit.document.id}`)}
-/>
+function Recommendations({ userId }) {
+  const { recommendations, loading } = useRecommendations({
+    collection: 'products',
+    userId,
+    limit: 10,
+    algorithm: 'hybrid',
+  });
+
+  return (
+    <div>
+      {recommendations?.hits.map((hit) => (
+        <div key={hit.document.id}>{hit.document.name}</div>
+      ))}
+    </div>
+  );
+}
 ```
 
-#### Facets
-
-Faceted navigation component.
+### AI Chat Search
 
 ```tsx
-import { Facets } from '@aacsearch/react';
+import { useConversationalSearch } from '@aacsearch/react';
 
-<Facets
-  facetCounts={results?.facet_counts}
-  selectedFacets={selectedFacets}
-  onFacetChange={(field, value, checked) => {
-    if (checked) {
-      addFilter(field, value);
-    } else {
-      removeFilter(field, value);
+function ChatSearch() {
+  const { messages, sendMessage, isStreaming } = useConversationalSearch({
+    collection: 'products',
+    streaming: true,
+  });
+
+  return (
+    <div>
+      {messages.map((msg) => (
+        <div key={msg.id} className={msg.role}>
+          {msg.content}
+        </div>
+      ))}
+
+      <input
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            sendMessage(e.currentTarget.value);
+            e.currentTarget.value = '';
+          }
+        }}
+        disabled={isStreaming}
+      />
+    </div>
+  );
+}
+```
+
+### Real-time Updates
+
+```tsx
+import { useRealtime } from '@aacsearch/react';
+
+function LiveData() {
+  const { connected, updates, subscribe } = useRealtime({
+    autoConnect: true,
+  });
+
+  useEffect(() => {
+    if (connected) {
+      subscribe('products');
     }
-  }}
-/>
+  }, [connected]);
+
+  return (
+    <div>
+      <p>Status: {connected ? 'Connected' : 'Disconnected'}</p>
+      <div>Latest updates: {updates.length}</div>
+    </div>
+  );
+}
 ```
 
-#### Pagination
-
-Pagination component.
-
-```tsx
-import { Pagination } from '@aacsearch/react';
-
-<Pagination
-  currentPage={page}
-  totalPages={totalPages}
-  onPageChange={setPage}
-/>
-```
-
-### SDK Client (Without React)
-
-You can also use the core SDK without React:
+## SDK Client Usage (Without React)
 
 ```typescript
-import { AACSearchClient } from '@aacsearch/react';
+import { AACSearchClientExtended } from '@aacsearch/react';
 
-const client = new AACSearchClient({
+const client = new AACSearchClientExtended({
   apiKey: 'your-api-key',
   endpoint: 'https://api.aacsearch.com',
 });
@@ -331,142 +221,127 @@ const client = new AACSearchClient({
 const results = await client.search({
   q: 'laptop',
   collection: 'products',
-  query_by: 'name,description',
   filter_by: 'price:<1000',
-  sort_by: 'price:asc',
 });
 
-// Create collection
-const collection = await client.createCollection({
-  name: 'products',
-  fields: [
-    { name: 'name', type: 'string' },
-    { name: 'price', type: 'float' },
+// Conversational search
+const answer = await client.conversationalSearch({
+  message: 'Find me a good laptop under $1000',
+  collection: 'products',
+});
+
+// Vector search
+const similar = await client.vectorSearch({
+  query_text: 'MacBook Pro',
+  collection: 'products',
+  k: 10,
+});
+
+// Recommendations
+const recs = await client.getRecommendations({
+  user_id: 'user-123',
+  collection: 'products',
+  limit: 10,
+});
+
+// Auto-suggest
+const suggestions = await client.autoSuggest('lapt', 'products');
+
+// Batch operations
+await client.batchOperations({
+  collection: 'products',
+  operations: [
+    { action: 'index', document: { id: '1', name: 'Product 1' } },
+    { action: 'update', id: '2', document: { price: 99 } },
+    { action: 'delete', id: '3' },
   ],
 });
-
-// Import documents
-await client.importDocuments({
-  collection: 'products',
-  documents: [
-    { id: '1', name: 'Laptop', price: 999 },
-    { id: '2', name: 'Mouse', price: 29 },
-  ],
-});
-
-// Get analytics
-const analytics = await client.getAnalytics({
-  start_date: '2024-01-01',
-  end_date: '2024-12-31',
-});
 ```
 
-## Advanced Usage
+## Advanced Features
 
-### Custom Search Parameters
+See [README_EXTENDED.md](./README_EXTENDED.md) for comprehensive documentation on:
 
-```tsx
-const { search } = useSearch({ collection: 'products' });
-
-search({
-  q: 'laptop',
-  query_by: 'name,description',
-  filter_by: 'price:[500..1500] && category:=Electronics',
-  sort_by: 'price:asc,_text_match:desc',
-  facet_by: 'category,brand',
-  max_facet_values: 10,
-  per_page: 20,
-  page: 1,
-  typo_tolerance: true,
-  prefix: true,
-  highlight_fields: 'name,description',
-});
-```
-
-### Multi-Search
-
-```typescript
-const results = await client.multiSearch([
-  {
-    collection: 'products',
-    q: 'laptop',
-    query_by: 'name',
-  },
-  {
-    collection: 'articles',
-    q: 'laptop review',
-    query_by: 'title,content',
-  },
-]);
-```
-
-### Document Management
-
-```typescript
-// Index a document
-await client.indexDocument('products', {
-  id: '123',
-  name: 'MacBook Pro',
-  price: 1999,
-  category: 'Electronics',
-});
-
-// Update a document
-await client.updateDocument('products', '123', {
-  price: 1799,
-});
-
-// Delete a document
-await client.deleteDocument({
-  collection: 'products',
-  id: '123',
-});
-
-// Delete by query
-await client.deleteDocumentsByQuery('products', 'price:<100');
-```
-
-### Analytics Tracking
-
-```typescript
-// Track custom event
-await client.trackEvent({
-  type: 'product_view',
-  collection: 'products',
-  query: 'laptop',
-  metadata: {
-    product_id: '123',
-    user_id: 'user-456',
-  },
-});
-```
+- AI-Powered Conversational Search with streaming
+- Vector/Semantic Search
+- Smart Recommendations
+- Real-time WebSocket updates
+- Auto-suggest/Autocomplete
+- Performance Analytics
+- A/B Testing
+- Batch Operations
+- User Event Tracking
 
 ## TypeScript Support
 
-The library is fully typed. Import types as needed:
+Fully typed with TypeScript:
 
 ```typescript
 import type {
-  SearchParams,
   SearchResult,
   SearchHit,
   Collection,
-  CollectionField,
-  AnalyticsData,
-  ApiKey,
-  AACSearchConfig,
+  ConversationalSearchResult,
+  RecommendationParams,
 } from '@aacsearch/react';
+
+// Generic type support
+const { results } = useSearch<MyProductType>({
+  collection: 'products',
+});
+
+// results is typed as SearchResult<MyProductType>
+```
+
+## API Reference
+
+### Hook Options
+
+All hooks support common options:
+
+```typescript
+interface CommonOptions {
+  collection: string;
+  autoFetch?: boolean;
+  onSuccess?: (data: any) => void;
+  onError?: (error: AACSearchError) => void;
+}
+```
+
+### useSearch Options
+
+```typescript
+interface UseSearchOptions {
+  collection: string;
+  initialQuery?: string;
+  autoSearch?: boolean;
+  onSuccess?: (results: SearchResult) => void;
+  onError?: (error: AACSearchError) => void;
+}
+```
+
+### useInstantSearch Options
+
+```typescript
+interface UseInstantSearchOptions {
+  collection: string;
+  searchFields: string[];
+  facetFields?: string[];
+  debounceMs?: number;
+  resultsPerPage?: number;
+  defaultFilters?: Record<string, string[]>;
+  defaultSortBy?: string;
+}
 ```
 
 ## Examples
 
-Check out the [examples](./examples) directory for complete working examples:
+Check the [examples](./examples) directory:
 
-- Basic Search
-- Instant Search with Filters
-- E-commerce Product Search
-- Blog Search
-- Multi-tenant Application
+- `basic-search.tsx` - Simple search
+- `instant-search.tsx` - Advanced search with filters
+- `nextjs-example.tsx` - Next.js integration
+- `sdk-usage.ts` - SDK without React
 
 ## Framework Support
 
@@ -476,28 +351,24 @@ Check out the [examples](./examples) directory for complete working examples:
 - Vite
 - Create React App
 
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## License
 
-MIT License - see [LICENSE](./LICENSE) for details.
+MIT - See [LICENSE](./LICENSE)
+
+## Links
+
+- [Documentation](https://docs.aacsearch.com)
+- [Extended Features Guide](./README_EXTENDED.md)
+- [Examples](./examples)
+- [Changelog](./CHANGELOG.md)
+- [Discord Community](https://discord.gg/aacsearch)
 
 ## Support
 
-- Documentation: https://docs.aacsearch.com
-- Issues: https://github.com/aacsearch/react/issues
 - Email: support@aacsearch.com
-- Discord: https://discord.gg/aacsearch
-
-## Credits
-
-Built with by the AACSearch team.
+- Issues: https://github.com/aacsearch/react/issues
+- Documentation: https://docs.aacsearch.com
