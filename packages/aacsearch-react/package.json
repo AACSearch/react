@@ -1,0 +1,70 @@
+{
+  "name": "@aacsearch/react",
+  "version": "1.0.0",
+  "description": "Official React library for AACSearch - A powerful search-as-a-service platform",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "search",
+    "react",
+    "typescript",
+    "instant-search",
+    "typesense",
+    "search-ui",
+    "saas",
+    "aacsearch"
+  ],
+  "author": "AACSearch Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aacsearch/react.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aacsearch/react/issues"
+  },
+  "homepage": "https://aacsearch.com",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  },
+  "dependencies": {},
+  "sideEffects": false
+}

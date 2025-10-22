@@ -1,0 +1,35 @@
+# Source files
+src/
+
+# Config files
+tsconfig.json
+tsup.config.ts
+.eslintrc*
+.prettierrc*
+
+# Examples
+examples/
+
+# Tests
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+__tests__/
+coverage/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Development
+.vscode/
+.idea/
+*.log
+.env*
+
+# Git
+.git/
+.gitignore
+.gitattributes
